@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RecipeCQRS.Application.Common.Interfaces;
-using RecipeCQRS.Infrastructure.Entities;
+using RecipeCQRS.Application.Entities;
 
 namespace RecipeCQRS.Infrastructure.Data;
 
@@ -9,10 +9,10 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-    public DbSet<Recipe> Recipes => Set<Recipe>();
-    public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<Recipe>     Recipes     => Set<Recipe>();
+    public DbSet<Tag>        Tags        => Set<Tag>();
     public DbSet<Ingredient> Ingredients => Set<Ingredient>();
-    public DbSet<Step> Steps => Set<Step>();
+    public DbSet<Step>       Steps       => Set<Step>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
