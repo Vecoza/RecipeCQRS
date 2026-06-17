@@ -12,7 +12,7 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         }
         catch (ValidationException ex)
         {
-            context.Response.StatusCode = 400;
+            context.Response.StatusCode  = 400;
             context.Response.ContentType = "application/json";
 
             var errors = ex.Errors
@@ -21,10 +21,23 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
 
             await context.Response.WriteAsJsonAsync(new { errors });
         }
+        catch (KeyNotFoundException ex)
+        {
+            context.Response.StatusCode  = 404;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            context.Response.StatusCode  = 403;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Unhandled exception");
-            context.Response.StatusCode = 500;
+            context.Response.StatusCode  = 500;
+            context.Response.ContentType = "application/json";
             await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred" });
         }
     }
