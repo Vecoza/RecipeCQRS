@@ -1,0 +1,30 @@
+## .NET / C#
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+
+## User Secrets (NEVER commit these)
+**/secrets.json
+**/appsettings.Local.json
+RecipeCQRS.API/appsettings.json
+
+## EF Core migrations (keep the folder, ignore the snapshot if preferred)
+# Uncomment the next line only if you prefer to regenerate snapshots:
+# **/Migrations/
+
+## Build outputs
+publish/
+*.nupkg
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Claude
+.claude/
+
+## Docker
+.dockerignore
