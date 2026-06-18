@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecipeCQRS.Application.Features.Recipes.Commands.CreateRecipe;
 using RecipeCQRS.Application.Features.Recipes.Commands.DeleteRecipe;
+using RecipeCQRS.Application.Features.Recipes.Commands.UpdateRecipe;
+using RecipeCQRS.Application.Features.Recipes.Queries.GetRecipeById;
 
 namespace RecipeCQRS.API.Controllers;
 
@@ -20,7 +22,16 @@ public class RecipesController : ControllerBase
     public IActionResult GetAll() => Ok(new List<object>());
 
     [HttpGet("{id:guid}", Name = nameof(GetById))]
-    public IActionResult GetById(Guid id) => Ok();
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var result = await _mediator.Send(new GetRecipeByIdQuery
+        {
+            Id     = id,
+            UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!
+        });
+
+        return result is null ? NotFound() : Ok(result);
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateRecipeCommand cmd)
@@ -29,6 +40,15 @@ public class RecipesController : ControllerBase
             cmd with { UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)! });
 
         return CreatedAtAction(nameof(GetById), new { id }, new { id });
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateRecipeCommand cmd)
+    {
+        await _mediator.Send(
+            cmd with { Id = id, UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)! });
+
+        return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
