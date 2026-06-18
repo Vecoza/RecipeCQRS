@@ -6,6 +6,7 @@ using RecipeCQRS.Application.Features.Recipes.Commands.CreateRecipe;
 using RecipeCQRS.Application.Features.Recipes.Commands.DeleteRecipe;
 using RecipeCQRS.Application.Features.Recipes.Commands.UpdateRecipe;
 using RecipeCQRS.Application.Features.Recipes.Queries.GetRecipeById;
+using RecipeCQRS.Application.Features.Recipes.Queries.GetRecipesList;
 
 namespace RecipeCQRS.API.Controllers;
 
@@ -19,7 +20,17 @@ public class RecipesController : ControllerBase
     public RecipesController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
-    public IActionResult GetAll() => Ok(new List<object>());
+    public async Task<IActionResult> GetAll([FromQuery] string? search, [FromQuery] string? tags)
+    {
+        var result = await _mediator.Send(new GetRecipesListQuery
+        {
+            UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!,
+            Search = search,
+            Tags   = tags
+        });
+
+        return Ok(result);
+    }
 
     [HttpGet("{id:guid}", Name = nameof(GetById))]
     public async Task<IActionResult> GetById(Guid id)
